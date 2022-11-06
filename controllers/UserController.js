@@ -22,19 +22,19 @@ function create(req, res) {
     user.image = 'null';
     user.rol = 'Operador';
 
-    if (params.password){
+    if (params.password) {
         //Encritamos el paswwordc
         bcrypt.hash(params.password, saltRounds, function (err, hash) {
             user.password = hash;
-            if(user.primerNombre != null && user.primerApellido != null && user.email != null) {
+            if (user.primerNombre != null && user.primerApellido != null && user.email != null) {
                 user.save((err, userStored) => {
-                    if(err){
+                    if (err) {
                         console.log(err);
                         res.status(500).send({
                             message: 'Error al guardar el usuario'
                         });
                     } else {
-                        if(!userStored){
+                        if (!userStored) {
                             res.status(404).send({
                                 message: 'No se ha registrado el usuario'
                             });
@@ -59,38 +59,42 @@ function create(req, res) {
     }
 }
 
-function login(req, res){
-    var params = req.body;
+function login(req, res) {
+    let params = req.body;
 
-    var email = params.email;
-    var password = params.password;
+    let email = params.email;
+    let password = params.password;
 
     User.findOne({
-       email: email.toLowerCase()
+        email: email.toLowerCase()
     }, (err, user) => {
-        if(err){
+        if (err) {
             res.status(500).send({
-               message: 'Error en la peticion.'
+                status: false,
+                message: 'Error en la peticion.'
             });
         } else {
-            if(!user) {
-                res.status(404).send({
+            if (!user) {
+                res.status(200).send({
+                    status: false,
                     message: 'Usuario no existe.'
                 });
-            }else {
+            } else {
                 bcrypt.compare(password, user.password, function (err, check) {
-                    if(check){
-                        if(params.gethash){
+                    if (check) {
+                        if (params.gethash) {
                             res.status(200).send({
                                 token: jwt.createToken(user)
                             });
                         } else {
                             res.status(200).send({
+                                status: true,
                                 user
                             });
                         }
                     } else {
-                        res.status(404).send({
+                        res.status(200).send({
+                            status: false,
                             message: 'Usuario y/o contraseña incorrecta..'
                         });
                     }
@@ -105,12 +109,12 @@ function update(req, res) {
     var updateParams = req.body;
 
     User.findByIdAndUpdate(userId, updateParams, (err, userUpdate) => {
-        if(err){
+        if (err) {
             res.status(500).send({
-               message: 'Error al actualizar el usuario'
+                message: 'Error al actualizar el usuario'
             });
         } else {
-            if(!userUpdate){
+            if (!userUpdate) {
                 res.status(404).send({
                     message: 'No se ha podido actualizar el usuario'
                 });
@@ -127,7 +131,7 @@ function uploadImagen(req, res) {
     var userId = req.params.id;
     var fileName = 'No subido';
 
-    if(req.files){
+    if (req.files) {
         var filePath = req.files.image.path;
         var fileSplit = filePath.split('\\');
         var fileName = fileSplit[2];
@@ -136,9 +140,9 @@ function uploadImagen(req, res) {
         var fileExt = extSplit[1];
         console.log(fileExt.lowercase);
 
-        if(fileExt.toLowerCase() == 'png' || fileExt.toLowerCase() == 'jpg' || fileExt.toLowerCase() == 'gif'){
-            User.findByIdAndUpdate(userId, {image: fileName}, (err, userUpdate) => {
-                if(!userUpdate){
+        if (fileExt.toLowerCase() == 'png' || fileExt.toLowerCase() == 'jpg' || fileExt.toLowerCase() == 'gif') {
+            User.findByIdAndUpdate(userId, { image: fileName }, (err, userUpdate) => {
+                if (!userUpdate) {
                     res.status(404).send({
                         message: 'No se ha podido actualizar el usuario'
                     });
@@ -150,11 +154,11 @@ function uploadImagen(req, res) {
                 }
             });
         } else {
-            res.status(200).send({message: 'Extension de archivo no valida.'})
+            res.status(200).send({ message: 'Extension de archivo no valida.' })
         }
     } else {
         res.status(200).send({
-           message: 'No has subido ninguna imagen.'
+            message: 'No has subido ninguna imagen.'
         });
     }
 }
@@ -163,16 +167,16 @@ function getImagen(req, res) {
     var imageFile = req.params.imageFile;
     var pathFile = './uploads/users/' + imageFile;
     fs.exists(pathFile, function (exists) {
-        if(exists){
+        if (exists) {
             res.sendFile(path.resolve(pathFile));
         } else {
-            res.status(200).send({message: 'No existe imagen con ese nombre...'})
+            res.status(200).send({ message: 'No existe imagen con ese nombre...' })
         }
     })
 }
 
-function findByAll(req, res){
-    if(req.params.page){
+function findByAll(req, res) {
+    if (req.params.page) {
         var page = req.params.page;
     } else {
         var page = 1;
@@ -180,11 +184,11 @@ function findByAll(req, res){
     var itemsPerPage = 3;
 
     User.find().sort('primerApellido').paginate(page, itemsPerPage, function (error, users, total) {
-        if(error){
-            res.status(500).send({message: 'Error en la peticion'});
+        if (error) {
+            res.status(500).send({ message: 'Error en la peticion' });
         } else {
-            if(!users){
-                res.status(404).send({message: 'No hay usuarios registrados'});
+            if (!users) {
+                res.status(404).send({ message: 'No hay usuarios registrados' });
             } else {
                 return res.status(200).send({
                     items: total,
@@ -199,15 +203,15 @@ function findById(req, res) {
     var userId = req.params.id;
 
     User.findById(userId, (error, user) => {
-       if(error){
-           res.status(500).send({message: 'Error en la peticion.'});
-       } else {
-           if(!user){
-               res.status(404).send({message: 'El artista no existe.'});
-           } else {
-               res.status(500).send({user});
-           }
-       }
+        if (error) {
+            res.status(500).send({ message: 'Error en la peticion.' });
+        } else {
+            if (!user) {
+                res.status(404).send({ message: 'El artista no existe.' });
+            } else {
+                res.status(500).send({ user });
+            }
+        }
     });
 }
 
@@ -215,15 +219,15 @@ function destroy(req, res) {
     var userId = req.params.id;
 
     User.findByIdAndRemove(userId, function (error, userRemove) {
-       if(error){
-           res.status(500).send({message: 'Error eliminando el usuario.'});
-       } else {
-           if(!userRemove) {
-               res.status(404).send({message: 'El usuario no existe.'});
-           } else {
-               res.status(200).send({userRemove});
-           }
-       }
+        if (error) {
+            res.status(500).send({ message: 'Error eliminando el usuario.' });
+        } else {
+            if (!userRemove) {
+                res.status(404).send({ message: 'El usuario no existe.' });
+            } else {
+                res.status(200).send({ userRemove });
+            }
+        }
     });
 }
 
