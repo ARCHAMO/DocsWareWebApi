@@ -1,27 +1,27 @@
 'use strict';
 
 let fs = require('fs');
-let DocumentationModel = require('../models/DocumentationModel');
+let ModuleModel = require('../models/ModuleModel');
 
 function create(req, res) {
-    let documentation = new DocumentationModel();
+    let module = new ModuleModel();
     let params = req.body;
 
-    documentation.nombre = params.nombre;
-    documentation.description = params.description;
-    documentation.icon = params.icon;
+    project.nombre = params.nombre;
+    project.description = params.description;
+    project.icon = params.icon;
 
     // Se realizan todas las validaciones necesarias
-    documentation.save((err, result) => {
+    module.save((err, result) => {
         if (err) {
             res.status(500).send({
-                message: 'Error al guardar el proyecto'
+                message: 'Error al guardar el modulo'
             });
         } else {
             if (!result) {
                 res.status(200).send({
                     status: false,
-                    message: 'No se ha registrado el proyecto'
+                    message: 'No se ha registrado el modulo'
                 });
             } else {
                 res.status(200).send({
@@ -37,16 +37,16 @@ function update(req, res) {
     let id = req.params.id;
     let updateParams = req.body;
 
-    DocumentationModel.findByIdAndUpdate(id, updateParams, (err, result) => {
+    ModuleModel.findByIdAndUpdate(id, updateParams, (err, result) => {
         if (err) {
             res.status(500).send({
-                message: 'Error al actualizar el proyecto'
+                message: 'Error al actualizar el modulo'
             });
         } else {
             if (!result) {
                 res.status(200).send({
                     status: false,
-                    message: 'No se ha podido actualizar el proyecto'
+                    message: 'No se ha podido actualizar el modulo'
                 });
             } else {
                 res.status(200).send({
@@ -66,7 +66,7 @@ function findByAll(req, res) {
     }
     let itemsPerPage = 10;
 
-    DocumentationModel.paginate({}, {}, function (error, result) {
+    ModuleModel.paginate({}, {}, function (error, result) {
         if (error) {
             res.status(500).send({
                 success: false,
@@ -91,7 +91,7 @@ function findByAll(req, res) {
 function findById(req, res) {
     let id = req.params.id;
 
-    DocumentationModel.findById(id, (error, result) => {
+    ModuleModel.findById(id, (error, result) => {
         if (error) {
             res.status(500).send({
                 status: false,
@@ -101,7 +101,7 @@ function findById(req, res) {
             if (!result) {
                 res.status(200).send({
                     status: false,
-                    message: 'El proyecto no existe.'
+                    message: 'El modulo no existe.'
                 });
             } else {
                 res.status(200).send({
@@ -116,17 +116,17 @@ function findById(req, res) {
 function destroy(req, res) {
     let id = req.params.id;
 
-    DocumentationModel.findByIdAndRemove(id, function (error, result) {
+    ModuleModel.findByIdAndRemove(id, function (error, result) {
         if (error) {
             res.status(500).send({
                 status: false,
-                message: 'Error eliminando el proyecto.'
+                message: 'Error eliminando el modulo.'
             });
         } else {
             if (!result) {
                 res.status(200).send({
                     status: false,
-                    message: 'El proyecto no existe.'
+                    message: 'El modulo no existe.'
                 });
             } else {
                 res.status(200).send({

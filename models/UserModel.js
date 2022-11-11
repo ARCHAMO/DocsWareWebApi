@@ -1,17 +1,20 @@
 'use strict'
 
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+let mongoose = require('mongoose');
+let Schema = mongoose.Schema;
+let mongoosePaginate = require('mongoose-paginate-v2');
 
-var UserSchema = Schema({
-    primerNombre: String,
-    segundoNombre: String,
-    primerApellido: String,
-    segundoApellido: String,
+let UserSchema = Schema({
+    firstName: String,
+    secondName: String,
+    firstLastName: String,
+    secondLastName: String,
     email: String,
     password: String,
     image: String,
-    role: String
+    rol: String
 });
+
+UserSchema.plugin(mongoosePaginate);
 
 module.exports = mongoose.model('User', UserSchema);

@@ -7,9 +7,11 @@ let app = express();
 
 // Cargamos las rutas
 let userRouters = require('./routes/UserRouters');
+let moduloRouters = require('./routes/ModuleRouters');
+let projectRouters = require('./routes/ProjectRouters');
 let documentationRouters = require('./routes/DocumentationRouters');
 
-app.use(bodyParser.urlencoded({extended:false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // Configuramos las cabeceras http
@@ -23,7 +25,11 @@ app.use((req, res, next) => {
 
 // Rutas base
 app.use('/api', userRouters);
+app.use('/api', projectRouters);
+app.use('/api', moduloRouters);
 app.use('/api', documentationRouters);
+
+// app.use('/api', documentationRouters);
 
 module.exports = app;
 

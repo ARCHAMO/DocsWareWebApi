@@ -1,18 +1,18 @@
 'use strict';
 
 let fs = require('fs');
-let DocumentationModel = require('../models/DocumentationModel');
+let ProjectModel = require('../models/ProjectModel');
 
 function create(req, res) {
-    let documentation = new DocumentationModel();
+    let project = new ProjectModel();
     let params = req.body;
 
-    documentation.nombre = params.nombre;
-    documentation.description = params.description;
-    documentation.icon = params.icon;
+    project.nombre = params.nombre;
+    project.description = params.description;
+    project.icon = params.icon;
 
     // Se realizan todas las validaciones necesarias
-    documentation.save((err, result) => {
+    project.save((err, result) => {
         if (err) {
             res.status(500).send({
                 message: 'Error al guardar el proyecto'
@@ -37,7 +37,7 @@ function update(req, res) {
     let id = req.params.id;
     let updateParams = req.body;
 
-    DocumentationModel.findByIdAndUpdate(id, updateParams, (err, result) => {
+    ProjectModel.findByIdAndUpdate(id, updateParams, (err, result) => {
         if (err) {
             res.status(500).send({
                 message: 'Error al actualizar el proyecto'
@@ -66,7 +66,7 @@ function findByAll(req, res) {
     }
     let itemsPerPage = 10;
 
-    DocumentationModel.paginate({}, {}, function (error, result) {
+    ProjectModel.paginate({}, {}, function (error, result) {
         if (error) {
             res.status(500).send({
                 success: false,
@@ -91,7 +91,7 @@ function findByAll(req, res) {
 function findById(req, res) {
     let id = req.params.id;
 
-    DocumentationModel.findById(id, (error, result) => {
+    ProjectModel.findById(id, (error, result) => {
         if (error) {
             res.status(500).send({
                 status: false,
@@ -116,7 +116,7 @@ function findById(req, res) {
 function destroy(req, res) {
     let id = req.params.id;
 
-    DocumentationModel.findByIdAndRemove(id, function (error, result) {
+    ProjectModel.findByIdAndRemove(id, function (error, result) {
         if (error) {
             res.status(500).send({
                 status: false,

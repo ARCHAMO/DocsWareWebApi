@@ -8,7 +8,6 @@ const saltRounds = 10;
 const myPlaintextPassword = 's0/\/\P4$$w0rD';
 const someOtherPlaintextPassword = 'not_bacon';
 var jwt = require('../services/jwt');
-var mongoosePaginate = require('mongoose-pagination');
 
 function create(req, res) {
     var user = new User();
@@ -89,7 +88,7 @@ function login(req, res) {
                         } else {
                             res.status(200).send({
                                 status: true,
-                                user
+                                data: user
                             });
                         }
                     } else {
