@@ -4,7 +4,7 @@ let mongoose = require('mongoose');
 let Schema = mongoose.Schema;
 let mongoosePaginate = require('mongoose-paginate-v2');
 
-let UserSchema = Schema({
+let CustomerSchema = Schema({
     firstName: {
         type: String,
         required: true
@@ -20,27 +20,19 @@ let UserSchema = Schema({
         required: true,
         unique: true
     },
-    email: {
-        type: String,
-        unique: true,
-        required: true
-    },
-    password: {
-        type: String,
-        required: true
-    },
-    image: String,
-    rol: String,
     identification: {
         type: String,
         unique: true,
         required: true
     },
-    clienteId: { 
-        type: Schema.Types.ObjectId, 
-        ref: 'Customer',
+    email: {
+        type: String,
+        unique: true,
         required: true
     },
+    location: String,
+    state: String,
+    lastPaymentDate: Date
 },
     {
         timestamps: {
@@ -50,6 +42,6 @@ let UserSchema = Schema({
     }
 );
 
-UserSchema.plugin(mongoosePaginate);
+CustomerSchema.plugin(mongoosePaginate);
 
-module.exports = mongoose.model('User', UserSchema);
+module.exports = mongoose.model('Customer', CustomerSchema);

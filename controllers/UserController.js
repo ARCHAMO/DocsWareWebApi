@@ -1,45 +1,49 @@
 'use strict';
 
-var fs = require('fs');
-var path = require('path');
-var User = require('../models/UserModel');
+let fs = require('fs');
+let path = require('path');
+let UserModel = require('../models/UserModel');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const myPlaintextPassword = 's0/\/\P4$$w0rD';
 const someOtherPlaintextPassword = 'not_bacon';
-var jwt = require('../services/jwt');
+let jwt = require('../services/jwt');
+let Global = require('../shared/global');
 
 function create(req, res) {
-    var user = new User();
-    var params = req.body;
+    let user = new UserModel();
+    let params = req.body;
 
-    user.primerNombre = params.primerNombre;
-    user.segundoNombre = params.segundoNombre;
-    user.primerApellido = params.primerApellido;
-    user.segundoApellido = params.segundoApellido;
+    user.firstName = params.firstName;
+    user.secondName = params.secondName;
+    user.firstLastName = params.firstLastName;
+    user.secondLastName = params.secondLastName;
     user.email = params.email;
+    user.identification = params.identification;
     user.image = 'null';
-    user.rol = 'Operador';
+    user.fullName = params.fullName;
+    user.clienteId = params.clienteId;
 
     if (params.password) {
         //Encritamos el paswwordc
         bcrypt.hash(params.password, saltRounds, function (err, hash) {
             user.password = hash;
-            if (user.primerNombre != null && user.primerApellido != null && user.email != null) {
-                user.save((err, userStored) => {
+            if (user.firstName != null && user.firstLastName != null && user.email != null && user.password != null) {
+                user.save((err, result) => {
                     if (err) {
-                        console.log(err);
                         res.status(500).send({
-                            message: 'Error al guardar el usuario'
+                            message: 'Error al guardar el usuario. ' + err.message,
+                            errors: err.errors
                         });
                     } else {
-                        if (!userStored) {
+                        if (!result) {
                             res.status(404).send({
                                 message: 'No se ha registrado el usuario'
                             });
                         } else {
                             res.status(200).send({
-                                user: userStored
+                                status: true,
+                                user: result
                             });
                         }
                     }
@@ -64,7 +68,7 @@ function login(req, res) {
     let email = params.email;
     let password = params.password;
 
-    User.findOne({
+    UserModel.findOne({
         email: email.toLowerCase()
     }, (err, user) => {
         if (err) {
@@ -83,7 +87,8 @@ function login(req, res) {
                     if (check) {
                         if (params.gethash) {
                             res.status(200).send({
-                                token: jwt.createToken(user)
+                                status: true,
+                                data: { token: jwt.createToken(user) }
                             });
                         } else {
                             res.status(200).send({
@@ -104,22 +109,23 @@ function login(req, res) {
 }
 
 function update(req, res) {
-    var userId = req.params.id;
-    var updateParams = req.body;
+    let userId = req.params.id;
+    let updateParams = req.body;
 
-    User.findByIdAndUpdate(userId, updateParams, (err, userUpdate) => {
+    UserModel.findByIdAndUpdate(userId, updateParams, (err, result) => {
         if (err) {
             res.status(500).send({
                 message: 'Error al actualizar el usuario'
             });
         } else {
-            if (!userUpdate) {
+            if (!result) {
                 res.status(404).send({
                     message: 'No se ha podido actualizar el usuario'
                 });
             } else {
                 res.status(200).send({
-                    user: userUpdate
+                    status: true,
+                    user: result
                 });
             }
         }
@@ -127,27 +133,27 @@ function update(req, res) {
 }
 
 function uploadImagen(req, res) {
-    var userId = req.params.id;
-    var fileName = 'No subido';
+    let userId = req.params.id;
+    let fileName = 'No subido';
 
     if (req.files) {
-        var filePath = req.files.image.path;
-        var fileSplit = filePath.split('\\');
-        var fileName = fileSplit[2];
+        let filePath = req.files.image.path;
+        let fileSplit = filePath.split('\\');
+        let fileName = fileSplit[2];
 
-        var extSplit = fileName.split('\.');
-        var fileExt = extSplit[1];
+        let extSplit = fileName.split('\.');
+        let fileExt = extSplit[1];
         console.log(fileExt.lowercase);
 
         if (fileExt.toLowerCase() == 'png' || fileExt.toLowerCase() == 'jpg' || fileExt.toLowerCase() == 'gif') {
-            User.findByIdAndUpdate(userId, { image: fileName }, (err, userUpdate) => {
-                if (!userUpdate) {
+            UserModel.findByIdAndUpdate(userId, { image: fileName }, (err, result) => {
+                if (!result) {
                     res.status(404).send({
                         message: 'No se ha podido actualizar el usuario'
                     });
                 } else {
                     res.status(200).send({
-                        user: userUpdate,
+                        user: result,
                         image: fileName
                     });
                 }
@@ -163,8 +169,8 @@ function uploadImagen(req, res) {
 }
 
 function getImagen(req, res) {
-    var imageFile = req.params.imageFile;
-    var pathFile = './uploads/users/' + imageFile;
+    let imageFile = req.params.imageFile;
+    let pathFile = './uploads/users/' + imageFile;
     fs.exists(pathFile, function (exists) {
         if (exists) {
             res.sendFile(path.resolve(pathFile));
@@ -175,56 +181,67 @@ function getImagen(req, res) {
 }
 
 function findByAll(req, res) {
-    if (req.params.page) {
-        var page = req.params.page;
-    } else {
-        var page = 1;
-    }
-    var itemsPerPage = 3;
+    const options = {
+        page: req.params.page ? req.params.page : 1,
+        limit: req.params.limit ? req.params.page : Global.getLimit(),
+        customLabels: Global.getCustomLabels(),
+    };
 
-    User.find().sort('primerApellido').paginate(page, itemsPerPage, function (error, users, total) {
+    UserModel.paginate({}, options, (error, result) => {
         if (error) {
             res.status(500).send({ message: 'Error en la peticion' });
         } else {
-            if (!users) {
+            if (!result) {
                 res.status(404).send({ message: 'No hay usuarios registrados' });
             } else {
                 return res.status(200).send({
-                    items: total,
-                    users: users
+                    status: true,
+                    data: result.data,
+                    paginator: result.paginator
                 });
             }
         }
-    })
+    });
 }
 
 function findById(req, res) {
-    var userId = req.params.id;
+    let userId = req.params.id;
 
-    User.findById(userId, (error, user) => {
+    UserModel.findById(userId, (error, result) => {
         if (error) {
             res.status(500).send({ message: 'Error en la peticion.' });
         } else {
-            if (!user) {
-                res.status(404).send({ message: 'El artista no existe.' });
+            if (!result) {
+                res.status(404).send({ message: 'El usuario no existe.' });
             } else {
-                res.status(500).send({ user });
+                res.status(500).send({
+                    status: true,
+                    data: result
+                });
             }
         }
     });
 }
 
 function destroy(req, res) {
-    var userId = req.params.id;
+    let userId = req.params.id;
 
-    User.findByIdAndRemove(userId, function (error, userRemove) {
+    UserModel.findByIdAndRemove(userId, function (error, userRemove) {
         if (error) {
-            res.status(500).send({ message: 'Error eliminando el usuario.' });
+            res.status(500).send({
+                status: false,
+                message: 'Error eliminando el usuario.'
+            });
         } else {
             if (!userRemove) {
-                res.status(404).send({ message: 'El usuario no existe.' });
+                res.status(200).send({
+                    status: false,
+                    message: 'El usuario no existe.'
+                });
             } else {
-                res.status(200).send({ userRemove });
+                res.status(200).send({
+                    status: true
+                });
             }
         }
     });

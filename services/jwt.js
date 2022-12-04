@@ -10,10 +10,11 @@ exports.createToken = function(user){
         primerNombre: user.primerNombre,
         primerApellido: user.primerApellido,
         email: user.email,
-        image: user.image,
+        image: user.image, 
         role: user.role,
+        idCliente: user.role,
         iat: moment().unix(),
-        exp: moment().add(30, 'days').unix
+        exp: moment().add(30, 'days').unix()
     };
 
     return jwt.encode(payload, secret)

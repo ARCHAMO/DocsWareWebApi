@@ -9,7 +9,7 @@ let md_upload = multipart({uploadDir: './uploads/users'});
 
 // Rutas para el controlador de usuarios
 api.post('/user/login', UserController.login);
-api.post('/user', UserController.create);
+api.post('/user', md_auth.ensureAuth, UserController.create);
 api.put('/user/update/:id', md_auth.ensureAuth, UserController.update);
 api.post('/user/upload-image/:id', [md_auth.ensureAuth, md_upload], UserController.uploadImagen);
 api.get('/user/get-image/:imageFile', UserController.getImagen);

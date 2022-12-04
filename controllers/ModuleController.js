@@ -2,20 +2,24 @@
 
 let fs = require('fs');
 let ModuleModel = require('../models/ModuleModel');
+let Global = require('../shared/global');
 
 function create(req, res) {
     let module = new ModuleModel();
     let params = req.body;
 
-    project.nombre = params.nombre;
-    project.description = params.description;
-    project.icon = params.icon;
+    module.name = params.name;
+    module.description = params.description;
+    module.icon = params.icon;
+    module.projectId = params.projectId;
+    module.userCreationId = params.userCreationId;
 
     // Se realizan todas las validaciones necesarias
     module.save((err, result) => {
         if (err) {
             res.status(500).send({
-                message: 'Error al guardar el modulo'
+                message: 'Error al guardar el modulo. ' + err.message,
+                errors: err.errors
             });
         } else {
             if (!result) {
@@ -59,29 +63,23 @@ function update(req, res) {
 }
 
 function findByAll(req, res) {
-    if (req.params.page) {
-        var page = req.params.page;
-    } else {
-        var page = 1;
-    }
-    let itemsPerPage = 10;
+    const options = {
+        page: req.params.page ? req.params.page : 1,
+        limit: req.params.limit ? req.params.page : Global.getLimit(),
+        customLabels: Global.getCustomLabels(),
+    };
 
-    ModuleModel.paginate({}, {}, function (error, result) {
+    ModuleModel.paginate({}, options, (error, result) => {
         if (error) {
-            res.status(500).send({
-                success: false,
-                message: 'Error en la peticion'
-            });
+            res.status(500).send({ message: 'Error en la peticion' });
         } else {
             if (!result) {
-                res.status(200).send({
-                    success: false,
-                    message: 'No hay proyectos'
-                });
+                res.status(404).send({ message: 'No hay modulos registrados' });
             } else {
                 return res.status(200).send({
                     status: true,
-                    data: result
+                    data: result.data,
+                    paginator: result.paginator
                 });
             }
         }
@@ -93,18 +91,12 @@ function findById(req, res) {
 
     ModuleModel.findById(id, (error, result) => {
         if (error) {
-            res.status(500).send({
-                status: false,
-                message: 'Error en la peticion.'
-            });
+            res.status(500).send({ message: 'Error en la peticion.' });
         } else {
             if (!result) {
-                res.status(200).send({
-                    status: false,
-                    message: 'El modulo no existe.'
-                });
+                res.status(404).send({ message: 'El modulo no existe.' });
             } else {
-                res.status(200).send({
+                res.status(500).send({
                     status: true,
                     data: result
                 });
@@ -126,12 +118,11 @@ function destroy(req, res) {
             if (!result) {
                 res.status(200).send({
                     status: false,
-                    message: 'El modulo no existe.'
+                    message: 'El cliente no modulo.'
                 });
             } else {
                 res.status(200).send({
-                    status: true,
-                    data: result
+                    status: true
                 });
             }
         }
