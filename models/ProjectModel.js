@@ -5,10 +5,22 @@ let Schema = mongoose.Schema;
 let mongoosePaginate = require('mongoose-paginate-v2');
 
 let ProjectSchema = Schema({
-    name: String,
+    name: {
+        type: String,
+        required: true
+    },
     description: String,
     icon: String,
-    userCreationId: { type: Schema.Types.ObjectId, ref: 'User' },
+    customerId: { 
+        type: Schema.Types.ObjectId, 
+        ref: 'Customer',
+        required: true
+    },
+    userCreationId: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
     userModificationId: { type: Schema.Types.ObjectId, ref: 'User' }
 },
     {

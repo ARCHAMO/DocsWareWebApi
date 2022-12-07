@@ -36,7 +36,7 @@ let UserSchema = Schema({
         unique: true,
         required: true
     },
-    clienteId: { 
+    customerId: { 
         type: Schema.Types.ObjectId, 
         ref: 'Customer',
         required: true

@@ -1,32 +1,31 @@
 'use strict';
 
 let fs = require('fs');
-let ModuleModel = require('../models/ModuleModel');
+let ProjectModule = require('../models/ProjectModel');
 let Global = require('../shared/global');
 
 function create(req, res) {
-    let module = new ModuleModel();
+    let project = new ProjectModule();
     let params = req.body;
 
-    module.name = params.name;
-    module.description = params.description;
-    module.icon = params.icon;
-    module.projectId = params.projectId;
-    module.userCreationId = params.userCreationId;
-    module.customerId = params.customerId;
+    project.name = params.name;
+    project.description = params.description;
+    project.icon = params.icon;
+    project.userCreationId = params.userCreationId;
+    project.customerId = params.customerId;
 
     // Se realizan todas las validaciones necesarias
-    module.save((err, result) => {
+    project.save((err, result) => {
         if (err) {
             res.status(500).send({
-                message: 'Error al guardar el modulo. ' + err.message,
+                message: 'Error al guardar el projecto. ' + err.message,
                 errors: err.errors
             });
         } else {
             if (!result) {
                 res.status(200).send({
                     status: false,
-                    message: 'No se ha registrado el modulo'
+                    message: 'No se ha registrado el projecto'
                 });
             } else {
                 res.status(200).send({
@@ -42,16 +41,16 @@ function update(req, res) {
     let id = req.params.id;
     let updateParams = req.body;
 
-    ModuleModel.findByIdAndUpdate(id, updateParams, (err, result) => {
+    ProjectModule.findByIdAndUpdate(id, updateParams, (err, result) => {
         if (err) {
             res.status(500).send({
-                message: 'Error al actualizar el modulo'
+                message: 'Error al actualizar el projecto'
             });
         } else {
             if (!result) {
                 res.status(200).send({
                     status: false,
-                    message: 'No se ha podido actualizar el modulo'
+                    message: 'No se ha podido actualizar el projecto'
                 });
             } else {
                 res.status(200).send({
@@ -70,12 +69,12 @@ function findByAll(req, res) {
         customLabels: Global.getCustomLabels(),
     };
 
-    ModuleModel.paginate({}, options, (error, result) => {
+    ProjectModule.paginate({}, options, (error, result) => {
         if (error) {
             res.status(500).send({ message: 'Error en la peticion' });
         } else {
             if (!result) {
-                res.status(404).send({ message: 'No hay modulos registrados' });
+                res.status(404).send({ message: 'No hay clientes registrados' });
             } else {
                 return res.status(200).send({
                     status: true,
@@ -90,12 +89,12 @@ function findByAll(req, res) {
 function findById(req, res) {
     let id = req.params.id;
 
-    ModuleModel.findById(id, (error, result) => {
+    ProjectModule.findById(id, (error, result) => {
         if (error) {
             res.status(500).send({ message: 'Error en la peticion.' });
         } else {
             if (!result) {
-                res.status(404).send({ message: 'El modulo no existe.' });
+                res.status(404).send({ message: 'El projecto no existe.' });
             } else {
                 res.status(500).send({
                     status: true,
@@ -109,17 +108,17 @@ function findById(req, res) {
 function destroy(req, res) {
     let id = req.params.id;
 
-    ModuleModel.findByIdAndRemove(id, function (error, result) {
+    ProjectModule.findByIdAndRemove(id, function (error, result) {
         if (error) {
             res.status(500).send({
                 status: false,
-                message: 'Error eliminando el modulo.'
+                message: 'Error eliminando el projecto.'
             });
         } else {
             if (!result) {
                 res.status(200).send({
                     status: false,
-                    message: 'El cliente no modulo.'
+                    message: 'El projecto no existe.'
                 });
             } else {
                 res.status(200).send({

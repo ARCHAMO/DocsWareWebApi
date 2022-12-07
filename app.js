@@ -9,7 +9,7 @@ let app = express();
 let userRouters = require('./routes/UserRouters');
 let moduloRouters = require('./routes/ModuleRouters');
 let projectRouters = require('./routes/ProjectRouters');
-let documentationRouters = require('./routes/DocumentationRouters');
+// let documentationRouters = require('./routes/DocumentationRouters');
 let customerRouters = require('./routes/CustomerRouters');
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -28,7 +28,7 @@ app.use(function(req, res, next) {
 app.use('/api', userRouters);
 app.use('/api', projectRouters);
 app.use('/api', moduloRouters);
-app.use('/api', documentationRouters);
+// app.use('/api', documentationRouters);
 app.use('/api', customerRouters);
 
 module.exports = app;
