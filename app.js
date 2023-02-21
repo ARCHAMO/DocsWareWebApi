@@ -2,6 +2,7 @@
 
 let express = require('express');
 let bodyParser = require('body-parser');
+let cors = require('cors')
 
 let app = express();
 
@@ -14,6 +15,7 @@ let customerRouters = require('./routes/CustomerRouters');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(cors())
 
 // Configuramos las cabeceras http
 app.use(function(req, res, next) {

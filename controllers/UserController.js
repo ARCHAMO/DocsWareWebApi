@@ -22,7 +22,7 @@ function create(req, res) {
     user.identification = params.identification;
     user.image = 'null';
     user.fullName = params.fullName;
-    user.clienteId = params.clienteId;
+    user.customerId = params.customerId;
 
     if (params.password) {
         //Encritamos el paswwordc
