@@ -18,14 +18,14 @@ function create(req, res) {
     project.save((err, result) => {
         if (err) {
             res.status(500).send({
-                message: 'Error al guardar el projecto. ' + err.message,
+                message: 'Error al guardar el proyecto. ' + err.message,
                 errors: err.errors
             });
         } else {
             if (!result) {
                 res.status(200).send({
                     status: false,
-                    message: 'No se ha registrado el projecto'
+                    message: 'No se ha registrado el proyecto'
                 });
             } else {
                 res.status(200).send({
@@ -44,13 +44,14 @@ function update(req, res) {
     ProjectModule.findByIdAndUpdate(id, updateParams, (err, result) => {
         if (err) {
             res.status(500).send({
-                message: 'Error al actualizar el projecto'
+                message: 'Error al actualizar el proyecto. ' + err.message,
+                errors: err.errors
             });
         } else {
             if (!result) {
                 res.status(200).send({
                     status: false,
-                    message: 'No se ha podido actualizar el projecto'
+                    message: 'No se ha podido actualizar el proyecto'
                 });
             } else {
                 res.status(200).send({
@@ -71,10 +72,16 @@ function findByAll(req, res) {
 
     ProjectModule.paginate({}, options, (error, result) => {
         if (error) {
-            res.status(500).send({ message: 'Error en la peticion' });
+            res.status(500).send({
+                status: false,
+                message: 'Error en la peticion'
+            });
         } else {
             if (!result) {
-                res.status(404).send({ message: 'No hay clientes registrados' });
+                res.status(200).send({
+                    status: false,
+                    message: 'No hay clientes registrados'
+                });
             } else {
                 return res.status(200).send({
                     status: true,
@@ -91,12 +98,18 @@ function findById(req, res) {
 
     ProjectModule.findById(id, (error, result) => {
         if (error) {
-            res.status(500).send({ message: 'Error en la peticion.' });
+            res.status(500).send({
+                status: false,
+                message: 'Error en la peticion'
+            });
         } else {
             if (!result) {
-                res.status(404).send({ message: 'El projecto no existe.' });
+                res.status(200).send({
+                    status: false,
+                    message: 'El proyecto no existe.'
+                });
             } else {
-                res.status(500).send({
+                res.status(200).send({
                     status: true,
                     data: result
                 });
@@ -112,13 +125,13 @@ function destroy(req, res) {
         if (error) {
             res.status(500).send({
                 status: false,
-                message: 'Error eliminando el projecto.'
+                message: 'Error eliminando el proyecto.'
             });
         } else {
             if (!result) {
                 res.status(200).send({
                     status: false,
-                    message: 'El projecto no existe.'
+                    message: 'El proyecto no existe.'
                 });
             } else {
                 res.status(200).send({

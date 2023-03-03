@@ -45,6 +45,11 @@ function update(req, res) {
     ModuleModel.findByIdAndUpdate(id, updateParams, (err, result) => {
         if (err) {
             res.status(500).send({
+                message: 'Error al actualizar el modulo. ' + err.message,
+                errors: err.errors
+            });
+            res.status(200).send({
+                status: false,
                 message: 'Error al actualizar el modulo'
             });
         } else {
@@ -72,10 +77,16 @@ function findByAll(req, res) {
 
     ModuleModel.paginate({}, options, (error, result) => {
         if (error) {
-            res.status(500).send({ message: 'Error en la peticion' });
+            res.status(500).send({
+                status: false,
+                message: 'Error en la peticion'
+            });
         } else {
             if (!result) {
-                res.status(404).send({ message: 'No hay modulos registrados' });
+                res.status(200).send({
+                    status: false,
+                    message: 'No hay modulos registrados'
+                });
             } else {
                 return res.status(200).send({
                     status: true,
@@ -92,12 +103,18 @@ function findById(req, res) {
 
     ModuleModel.findById(id, (error, result) => {
         if (error) {
-            res.status(500).send({ message: 'Error en la peticion.' });
+            res.status(500).send({
+                status: false,
+                message: 'Error en la peticion'
+            });
         } else {
             if (!result) {
-                res.status(404).send({ message: 'El modulo no existe.' });
+                res.status(200).send({
+                    status: false,
+                    message: 'El modulo no existe.'
+                });
             } else {
-                res.status(500).send({
+                res.status(200).send({
                     status: true,
                     data: result
                 });
@@ -119,7 +136,7 @@ function destroy(req, res) {
             if (!result) {
                 res.status(200).send({
                     status: false,
-                    message: 'El cliente no modulo.'
+                    message: 'El modulo no existe.'
                 });
             } else {
                 res.status(200).send({
