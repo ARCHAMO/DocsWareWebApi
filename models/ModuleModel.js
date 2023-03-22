@@ -7,7 +7,8 @@ let mongoosePaginate = require('mongoose-paginate-v2');
 let ModuleSchema = Schema({
     name: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     description: String,
     icon: String,
@@ -16,10 +17,10 @@ let ModuleSchema = Schema({
         ref: 'Project',
         required: true,
     },
-    customerId: { 
-        type: Schema.Types.ObjectId, 
+    customerId: {
+        type: Schema.Types.ObjectId,
         ref: 'Customer',
-        required: true
+        required: [true, 'El cliente es requerido'],
     },
     userCreationId: {
         type: Schema.Types.ObjectId,

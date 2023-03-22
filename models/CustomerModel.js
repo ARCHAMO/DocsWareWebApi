@@ -7,18 +7,18 @@ let mongoosePaginate = require('mongoose-paginate-v2');
 let CustomerSchema = Schema({
     firstName: {
         type: String,
-        required: true
+        required: [true, 'El primer nombre es requerido']
     },
     secondName: String,
     firstLastName: {
         type: String,
-        required: true
+        required: [true, 'El primer apellido es requerido']
     },
     secondLastName: String,
     fullName: {
         type: String,
-        required: true,
-        unique: true
+        required: [true, 'El nombre completo es requerido'],
+        unique: [true, 'Nombre ya existe']
     },
     identification: {
         type: String,

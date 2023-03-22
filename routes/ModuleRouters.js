@@ -9,6 +9,7 @@ let md_auth = require('../middlewares/authenticated');
 api.post('/module', ModuleController.create);
 api.put('/module/update/:id', md_auth.ensureAuth, ModuleController.update);
 api.get('/modules/:page?', md_auth.ensureAuth, ModuleController.findByAll);
+api.get('/modules/project/:id', md_auth.ensureAuth, ModuleController.findByAllModuleForIdProject);
 api.get('/module/:id', md_auth.ensureAuth, ModuleController.findById);
 api.delete('/module/:id', md_auth.ensureAuth, ModuleController.destroy);
 
